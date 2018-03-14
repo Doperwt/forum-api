@@ -1,9 +1,8 @@
 const mongoose = require('../config/database')
-const { Schema } = mongoose
 const passportLocalMongoose = require('passport-local-mongoose')
+const { Schema } = mongoose
 
-
-const userSchema = New Schema({
+const userSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
