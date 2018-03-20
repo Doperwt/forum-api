@@ -6,7 +6,7 @@ mongoose.Promise = global.Promise
 // Connect to MongoDB
 const MONGODB_URL = process.env.MONGODB_URL || 'mongodb://localhost/siteysite'
 mongoose.set('debug', true)
-mongoose.connect(MONGODB_URL, { useMongoClient: true })
+mongoose.connect(MONGODB_URL)
 
 // Monitor DB connection
 const db = mongoose.connection
