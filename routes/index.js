@@ -1,10 +1,10 @@
 const articles = require('./articles')
 const users = require('./users')
 const sessions = require('./sessions')
-const profile = require('./profile')
+const profiles = require('./profiles')
 module.exports = {
   articles,
   users,
   sessions,
-  profile
+  profiles,
 }

@@ -8,5 +8,5 @@ module.exports = {
   Article,
   Reply,
   Message,
-  Profile
+  Profile,
 }

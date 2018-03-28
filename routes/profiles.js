@@ -7,14 +7,15 @@ const authenticate = passport.authorize('jwt', { session: false })
 
 module.exports = io => {
   router
-  .get('/profile/:id', (req, res, next) => {
+  .get('/profile/:id', authenticate,(req, res, next) => {
     const id = req.params.id
-
+    console.log("MESSAGE RECIEVED")
     Profile.find({userId:id})
       .then((profile) => {
         console.log(!profile,'profile found')
 
         if (!profile) { return next() }
+
         res.json(profile)
       })
       .catch((error) => res.json(null))
@@ -31,28 +32,27 @@ module.exports = io => {
     Profile.find({userId:id})
     .then((profile) => {
       console.log(!profile,'profile found')
-      if(!profile){
+      if(!!profile){
         Profile.create(newProfile)
-        .then((profile) => {
+        .then((createdProfile) => {
          io.emit('action', {
            type: 'PROFILE_CREATED',
-           payload: profile
+           payload: createdProfile
          })
-         res.json(profile)
        })
        .catch((error) => next(error))
       } else {
         Profile.findByIdAndUpdate(id,{ $set: newProfile }, { new: true })
-        .then((profile) => {
+        .then((updatedProfile) => {
           io.emit('action', {
             type: 'UPDATED_PROFILE',
-            payload: profile
+            payload: updatedProfile
           })
-          res.json(profile)
         })
         .catch((error) => next(error))
       }
     })
     .catch((error) => next(error))
   })
+  return router
 }
