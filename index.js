@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const passport = require('./config/auth')
-const { articles, users, sessions } = require('./routes')
+const { articles, users, sessions, profile } = require('./routes')
 const http = require('http')
 const socketAuth = require('./config/socket-auth')
 const socketIO = require('socket.io')
@@ -29,6 +29,7 @@ app
   .use(articles(io))
   .use(users)
   .use(sessions)
+  .use(profile)
 
   // catch 404 and forward to error handler
   .use((req, res, next) => {
