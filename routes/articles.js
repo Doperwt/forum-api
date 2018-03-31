@@ -21,9 +21,9 @@ module.exports = io => {
       const id = req.params.id
 
       Article.findById(id)
-        .then((group) => {
-          if (!group) { return next() }
-          res.json(group)
+        .then((foundArticle) => {
+          if (!foundArticle) { return next() }
+          res.json(foundArticle)
         })
         .catch((error) => next(error))
     })
@@ -31,19 +31,20 @@ module.exports = io => {
       console.log(req)
       // debugger
       const newArticle = {
-        name:  'batch-'+req.body.name,
-        startDate: req.body.start,
-        endDate: req.body.end,
-        students: []
+        author: req.body.userId,
+        title: req.body.title,
+        content: req.body.content,
+        messages: [],
+        category: req.body.category
       }
 
       Article.create(newArticle)
-        .then((group) => {
+        .then((createdArticle) => {
           io.emit('action', {
             type: 'ARTICLE_CREATED',
-            payload: group
+            payload: createdArticle
           })
-          res.json(group)
+          res.json(createdArticle)
         })
         .catch((error) => next(error))
     })
@@ -52,18 +53,18 @@ module.exports = io => {
       const userId = req.account._id.toString()
 
       Article.findById(id)
-        .then((group) => {
-          if (!group) { return next() }
+        .then((article) => {
+          if (!article) { return next() }
 
-          const updatedArticle = processMove(group, req.body, userId)
+          const updatedArticle = processMove(article, req.body, userId)
 
           Article.findByIdAndUpdate(id, { $set: updatedArticle }, { new: true })
-            .then((group) => {
+            .then((newUpdatedArticle) => {
               io.emit('action', {
                 type: 'ARTICLE_UPDATED',
-                payload: group
+                payload: newUpdatedArticle
               })
-              res.json(group)
+              res.json(newUpdatedArticle)
             })
             .catch((error) => next(error))
         })

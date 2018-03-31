@@ -28,26 +28,20 @@ module.exports = io => {
       picture: req.body.picture,
       userId:id,
     }
-    console.log(newProfile)
+    console.log(newProfile,'NEW PROFILE ')
     Profile.find({userId:id})
-    .then((profile) => {
-      console.log(!profile,'profile found')
-      if(!!profile){
+    .then((foundProfile) => {
+      console.log(!foundProfile,'foundProfile found')
+      if(!!foundProfile){
         Profile.create(newProfile)
         .then((createdProfile) => {
-         io.emit('action', {
-           type: 'PROFILE_CREATED',
-           payload: createdProfile
-         })
+          res.json(createdProfile)
        })
        .catch((error) => next(error))
       } else {
         Profile.findByIdAndUpdate(id,{ $set: newProfile }, { new: true })
         .then((updatedProfile) => {
-          io.emit('action', {
-            type: 'UPDATED_PROFILE',
-            payload: updatedProfile
-          })
+          res.json(updatedProfile)
         })
         .catch((error) => next(error))
       }
