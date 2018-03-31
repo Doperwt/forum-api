@@ -1,0 +1,17 @@
+const router = require('express').Router()
+const passport = require('../config/auth')
+const { Article } = require('../models')
+
+module.exports = io => {
+  router
+    .get('/categories', (req, res, next) => {
+      Article.find()
+        .then((articles) => {
+          let allCategories = articles.map(article => article.category)
+          let categories = allCategories.filter((el, i, a) => i === a.indexOf(el))
+          console.log(categories,'CATEGORIES')
+          res.json(categories)
+        })
+    })
+  return router
+}

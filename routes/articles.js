@@ -31,7 +31,7 @@ module.exports = io => {
       console.log(req)
       // debugger
       const newArticle = {
-        author: req.body.userId,
+        author: req.body.author,
         title: req.body.title,
         content: req.body.content,
         messages: [],
