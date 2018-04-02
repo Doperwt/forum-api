@@ -9,11 +9,8 @@ module.exports = io => {
   router
   .get('/profile/:id', authenticate,(req, res, next) => {
     const id = req.params.id
-    console.log("MESSAGE RECIEVED")
     Profile.find({userId:id})
       .then((profile) => {
-        console.log(!profile,'profile found')
-
         if (!profile) { return next() }
 
         res.json(profile)
@@ -28,10 +25,8 @@ module.exports = io => {
       picture: req.body.picture,
       userId:id,
     }
-    console.log(newProfile,'NEW PROFILE ')
     Profile.find({userId:id})
     .then((foundProfile) => {
-      console.log(!foundProfile,'foundProfile found')
       if(!!foundProfile){
         Profile.create(newProfile)
         .then((createdProfile) => {
