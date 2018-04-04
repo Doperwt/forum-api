@@ -3,7 +3,7 @@ const passport = require('../../config/auth')
 const { Article,Reply,User,Profile } = require('../../models')
 // const utils = require('../lib/utils')
 // const processMove = require('../lib/processMove')
-
+const replaceAuthor = require('../../lib/replaceAuthor')
 const authenticate = passport.authorize('jwt', { session: false })
 
 module.exports = io => {
@@ -15,23 +15,9 @@ module.exports = io => {
     .sort({ createdAt: 1 })
     // Send the data in JSON format
     .then((replies) => {
-      User.find()
-        .then((users) => {
-          Profile.find()
-            .then((profiles) => {
-              let namedReplies
-              let user,profile
-              namedReplies = replies.map((reply) => {
-                user = users.filter(u => u._id == reply.author)[0]
-                profile = profiles.filter(p => p.userId == user._id)[0]
-                reply.author = (!!profile?profile.fullName:user.email)
-                return reply
-              })
-              res.json(namedReplies)
-            })
-            .catch((err) => res.json(err))
-        })
-        .catch((err) => res.json(err))
+
+      replaceAuthor(replies)
+        .then((newReplies) => res.json(newReplies))
     })
     // Throw a 500 error if something goes wrong
     .catch((error) => next(error))

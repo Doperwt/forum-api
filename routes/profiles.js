@@ -7,29 +7,6 @@ const authenticate = passport.authorize('jwt', { session: false })
 
 module.exports = io => {
   router
-  .get('/profiles',(req,res,next) => {
-    const ids = req.body.ids
-    console.log(ids)
-    User.find()
-      .then((users) => {
-        const filteredUsers = users.filter(u => !ids.filter(id => id===u._id)[0] )
-        let result
-        filteredUsers.map((u) => {
-          Profile.find({userId:u._id})
-            .then((profile) => {
-              if(!!profile){
-              result = [...result].concat(profile)
-            } else {
-              let user = {fullName:u.email,_id:u._id,createdAt:u.createdAt,updatedAt:u.updatedAt}
-              result = [...result].concat(user)
-            }
-            })
-            .catch((err) => res.json(err))
-
-        })
-        res.json(result)
-      })
-  })
   .get('/profile/:id', authenticate,(req, res, next) => {
     const id = req.params.id
     Profile.find({userId:id})

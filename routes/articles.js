@@ -3,6 +3,7 @@ const passport = require('../config/auth')
 const { Article } = require('../models')
 // const utils = require('../lib/utils')
 // const processMove = require('../lib/processMove')
+const replaceAuthor = require('../lib/replaceAuthor')
 
 const authenticate = passport.authorize('jwt', { session: false })
 
@@ -13,7 +14,10 @@ module.exports = io => {
         // Newest articles first
         .sort({ createdAt: -1 })
         // Send the data in JSON format
-        .then((articles) => res.json(articles))
+        .then((articles) => {
+          replaceAuthor(articles)
+            .then((newArticles) => res.json(newArticles))
+        })
         // Throw a 500 error if something goes wrong
         .catch((error) => next(error))
     })
