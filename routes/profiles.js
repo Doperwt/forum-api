@@ -9,7 +9,7 @@ module.exports = io => {
   router
   .get('/profile/:id', authenticate,(req, res, next) => {
     const id = req.params.id
-    Profile.find({userId:id})
+    Profile.findOne({userId:id})
       .then((profile) => {
         if (!profile) { return next() }
 

@@ -9,7 +9,6 @@ module.exports = io => {
         .then((articles) => {
           let allCategories = articles.map(article => article.category)
           let categories = allCategories.filter((el, i, a) => i === a.indexOf(el))
-          console.log(categories,'CATEGORIES')
           res.json(categories)
         })
     })

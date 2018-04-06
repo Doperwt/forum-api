@@ -32,8 +32,6 @@ module.exports = io => {
         .catch((error) => next(error))
     })
     .post('/articles', authenticate, (req, res, next) => {
-      console.log(req)
-      // debugger
       const newArticle = {
         author: req.body.author,
         title: req.body.title,

@@ -15,13 +15,13 @@ module.exports = io => {
     .sort({ createdAt: 1 })
     // Send the data in JSON format
     .then((replies) => {
-
       replaceAuthor(replies)
         .then((newReplies) => res.json(newReplies))
     })
     // Throw a 500 error if something goes wrong
     .catch((error) => next(error))
   })
+
   .get('/articles/:articleId/replies/:replyId', (req, res, next) => {
     const articleId = req.params.articleId
     const replyId = req.params.replyId
@@ -32,15 +32,14 @@ module.exports = io => {
     })
     .catch((error) => next(error))
   })
+
   .post('/articles/:id/replies', authenticate, (req, res, next) => {
     const articleId = req.params.id
-    // debugger
     const newReply = {
       author: req.body.author,
       articleId: articleId,
       content: req.body.content,
     }
-
     Reply.create(newReply)
     .then((createdReply) => {
       io.emit('action', {
@@ -51,17 +50,15 @@ module.exports = io => {
     })
     .catch((error) => next(error))
   })
+
   .patch('/articles/:articleId/replies/:replyId', authenticate, (req, res, next) => {
     const articleId = req.params.articleId
     const replyId = req.params.replyId
     const userId = req.account._id.toString()
-
     Reply.findById(replyId)
     .then((reply) => {
       if (!reply) { return next() }
-
       const updatedReply = { content:req.body.content }
-
       Reply.findByIdAndUpdate(replyId, { $set: updatedReply }, { new: true })
       .then((newUpdatedReply) => {
         io.emit('action', {
@@ -74,6 +71,7 @@ module.exports = io => {
     })
     .catch((error) => next(error))
   })
+
   .delete('/articles/:articleId/replies/:replyId', authenticate, (req, res, next) => {
     const articleId = req.params.articleId
     const replyId = req.params.replyId
@@ -91,6 +89,5 @@ module.exports = io => {
     })
     .catch((error) => next(error))
   })
-
   return router
 }
