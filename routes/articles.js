@@ -42,33 +42,44 @@ module.exports = io => {
 
       Article.create(newArticle)
         .then((createdArticle) => {
-          io.emit('action', {
-            type: 'ARTICLE_CREATED',
-            payload: createdArticle
-          })
-          res.json(createdArticle)
+          replaceAuthor([createdArticle])
+            .then((changedArticle) => {
+              io.emit('action', {
+                type: 'ARTICLE_CREATED',
+                payload: changedArticle[0]
+              })
+              res.json(changedArticle[0])
+            })
         })
         .catch((error) => next(error))
     })
     .patch('/articles/:id', authenticate, (req, res, next) => {
       const id = req.params.id
       const userId = req.account._id.toString()
-
+      const update = req.body
+      console.log(update,'UPDATE')
       Article.findById(id)
         .then((article) => {
           if (!article) { return next() }
-
-          const updatedArticle = processMove(article, req.body, userId)
-
+          if(article.author==userId){
+          let updatedArticle = article
+          updatedArticle.content = update.content
+          updatedArticle.title = update.title
           Article.findByIdAndUpdate(id, { $set: updatedArticle }, { new: true })
             .then((newUpdatedArticle) => {
-              io.emit('action', {
-                type: 'ARTICLE_UPDATED',
-                payload: newUpdatedArticle
-              })
-              res.json(newUpdatedArticle)
+              replaceAuthor([newUpdatedArticle])
+                .then((changedArticle) => {
+                  io.emit('action', {
+                    type: 'ARTICLE_UPDATED',
+                    payload: changedArticle[0]
+                  })
+                  res.json(changedArticle[0])
+                })
             })
             .catch((error) => next(error))
+          } else {
+            return next()
+          }
         })
         .catch((error) => next(error))
     })

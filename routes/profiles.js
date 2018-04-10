@@ -11,7 +11,7 @@ module.exports = io => {
     const id = req.params.id
     Profile.findOne({userId:id})
       .then((profile) => {
-        if (!profile) { return next() }
+        if (!profile) { res.json('not found') }
 
         res.json(profile)
       })
