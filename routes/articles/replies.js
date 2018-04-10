@@ -64,12 +64,15 @@ module.exports = io => {
       const updatedReply = { content:req.body.content }
       Reply.findByIdAndUpdate(replyId, { $set: updatedReply }, { new: true })
       .then((newUpdatedReply) => {
-        io.emit('action', {
-          type: 'REPLY_UPDATED',
-          payload: newUpdatedReply
+        replaceAuthor([newUpdatedReply])
+          .then((changedReply) => {
+            io.emit('action', {
+              type: 'REPLY_UPDATED',
+              payload: changedReply
+            })
+            res.json(changedReply)
+          })
         })
-        res.json(newUpdatedReply)
-      })
       .catch((error) => next(error))
     })
     .catch((error) => next(error))
