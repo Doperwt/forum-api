@@ -42,11 +42,14 @@ module.exports = io => {
     }
     Reply.create(newReply)
     .then((createdReply) => {
-      io.emit('action', {
-        type: 'REPLY_CREATED',
-        payload: createdReply
-      })
-      res.json(createdReply)
+      replaceAuthor([createdReply])
+        .then((changedReply) => {
+          io.emit('action', {
+            type: 'REPLY_CREATED',
+            payload: changedReply[0]
+          })
+          res.json(changedReply[0])
+        })
     })
     .catch((error) => next(error))
   })
