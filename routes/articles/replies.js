@@ -15,8 +15,13 @@ module.exports = io => {
     .sort({ createdAt: 1 })
     // Send the data in JSON format
     .then((replies) => {
-      replaceAuthor(replies)
-        .then((newReplies) => res.json(newReplies))
+      console.log(replies)
+      if(replies.length!==0){
+        replaceAuthor(replies)
+          .then((newReplies) => res.json(newReplies))
+      } else {
+        res.json(replies)
+      }
     })
     // Throw a 500 error if something goes wrong
     .catch((error) => next(error))

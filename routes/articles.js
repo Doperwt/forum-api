@@ -57,7 +57,6 @@ module.exports = io => {
       const id = req.params.id
       const userId = req.account._id.toString()
       const update = req.body
-      console.log(update,'UPDATE')
       Article.findById(id)
         .then((article) => {
           if (!article) { return next() }
