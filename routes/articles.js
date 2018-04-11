@@ -64,6 +64,7 @@ module.exports = io => {
           let updatedArticle = article
           updatedArticle.content = update.content
           updatedArticle.title = update.title
+          updatedArticle.updatedAt = Date.now()
           Article.findByIdAndUpdate(id, { $set: updatedArticle }, { new: true })
             .then((newUpdatedArticle) => {
               replaceAuthor([newUpdatedArticle])
