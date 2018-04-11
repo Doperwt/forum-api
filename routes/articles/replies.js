@@ -66,7 +66,7 @@ module.exports = io => {
     Reply.findById(replyId)
     .then((reply) => {
       if (!reply) { return next() }
-      const updatedReply = { content:req.body.content }
+      const updatedReply = { content:req.body.content,updatedAt:Date.now()}
       Reply.findByIdAndUpdate(replyId, { $set: updatedReply }, { new: true })
       .then((newUpdatedReply) => {
         replaceAuthor([newUpdatedReply])
