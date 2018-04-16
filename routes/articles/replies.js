@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const passport = require('../../config/auth')
-const { Article,Reply,User,Profile } = require('../../models')
+const { Reply } = require('../../models')
 // const utils = require('../lib/utils')
 // const processMove = require('../lib/processMove')
 const replaceAuthor = require('../../lib/replaceAuthor')
