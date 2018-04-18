@@ -17,24 +17,25 @@ module.exports = io => {
       })
       .catch((error) => res.json(null))
   })
-  .post('/profile/:id', (req, res, next) => {
+  .post('/profile/:id',authenticate, (req, res, next) => {
     const id = req.params.id
     const newProfile = {
       fullName: req.body.fullName,
       bio: req.body.bio,
       picture: req.body.picture,
-      userId:id,
+      userId: id
     }
-    Profile.find({userId:id})
+    Profile.findOne({userId:id})
     .then((foundProfile) => {
-      if(!!foundProfile){
+      if(!foundProfile){
         Profile.create(newProfile)
         .then((createdProfile) => {
           res.json(createdProfile)
        })
        .catch((error) => next(error))
       } else {
-        Profile.findByIdAndUpdate(id,{ $set: newProfile }, { new: true })
+        newProfile.updatedAt = Date.now()
+        Profile.findByIdAndUpdate(foundProfile._id,{ $set: newProfile }, { new: true })
         .then((updatedProfile) => {
           res.json(updatedProfile)
         })
