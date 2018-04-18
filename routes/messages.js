@@ -8,33 +8,30 @@ const authenticate = passport.authorize('jwt', { session: false })
 
 module.exports = io => {
   router
-  .get('/messages/:id', (req, res, next) => {
-    const id = req.params.id
-    Message.find({messageId:id})
-    // Newest messages first
-    .sort({ createdAt: 1 })
-    // Send the data in JSON format
-    .then((messages) => {
-      if(replies.length!==0){
-        replaceAuthor(replies)
-          .then((newMessages) => res.json(newMessages))
-      } else {
-        res.json(messages)
-      }
+  .get('/messages/:userId', (req, res, next) => {
+    const id = req.params.userId
+    console.log(id,'MESSAGE BODY')
+    Message.find({author:id})
+    .then((sentMessages) => {
+      Message.find({reciever:id})
+      .then((recievedMessages) =>{
+        let allMessages = [...sentMessages,...recievedMessages]
+        res.json(allMessages)
+      })
     })
     // Throw a 500 error if something goes wrong
     .catch((error) => next(error))
   })
 
-  .get('/messages/:messageId', (req, res, next) => {
-    const messageId = req.params.messageId
-    Message.findById(id)
-    .then((foundMessage) => {
-      if (!foundMessage) { return next() }
-      res.json(foundMessage)
-    })
-    .catch((error) => next(error))
-  })
+  // .get('/messages/:messageId', (req, res, next) => {
+  //   const messageId = req.params.messageId
+  //   Message.findById(id)
+  //   .then((foundMessage) => {
+  //     if (!foundMessage) { return next() }
+  //     res.json(foundMessage)
+  //   })
+  //   .catch((error) => next(error))
+  // })
 
   .post('/messages/', authenticate, (req, res, next) => {
     const messageId = req.params.id
@@ -46,10 +43,7 @@ module.exports = io => {
     }
     Message.create(newMessage)
     .then((createdMessage) => {
-      replaceAuthor([createdMessage])
-        .then((changedMessage) => {
-          res.json(changedMessage[0])
-        })
+      res.json(createdMessage)
     })
     .catch((error) => next(error))
   })
