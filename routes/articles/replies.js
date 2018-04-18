@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const passport = require('../../config/auth')
-const { Article,Reply,User,Profile } = require('../../models')
+const { Reply } = require('../../models')
 // const utils = require('../lib/utils')
 // const processMove = require('../lib/processMove')
 const replaceAuthor = require('../../lib/replaceAuthor')
@@ -66,7 +66,7 @@ module.exports = io => {
     Reply.findById(replyId)
     .then((reply) => {
       if (!reply) { return next() }
-      const updatedReply = { content:req.body.content }
+      const updatedReply = { content:req.body.content,updatedAt:Date.now()}
       Reply.findByIdAndUpdate(replyId, { $set: updatedReply }, { new: true })
       .then((newUpdatedReply) => {
         replaceAuthor([newUpdatedReply])
