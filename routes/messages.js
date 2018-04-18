@@ -23,17 +23,17 @@ module.exports = io => {
     .catch((error) => next(error))
   })
 
-  // .get('/messages/:messageId', (req, res, next) => {
-  //   const messageId = req.params.messageId
-  //   Message.findById(id)
-  //   .then((foundMessage) => {
-  //     if (!foundMessage) { return next() }
-  //     res.json(foundMessage)
-  //   })
-  //   .catch((error) => next(error))
-  // })
+  .get('/message/:messageId', (req, res, next) => {
+    const messageId = req.params.messageId
+    Message.findById(messageId)
+    .then((foundMessage) => {
+      if (!foundMessage) { return next() }
+      res.json(foundMessage)
+    })
+    .catch((error) => next(error))
+  })
 
-  .post('/messages/', authenticate, (req, res, next) => {
+  .post('/messages', authenticate, (req, res, next) => {
     const messageId = req.params.id
     const newMessage = {
       author: req.body.author,
@@ -41,6 +41,7 @@ module.exports = io => {
       reciever: req.body.reciever,
       replyTo: req.body.replyTo,
     }
+    console.log(newMessage,'NEW MESSAGE')
     Message.create(newMessage)
     .then((createdMessage) => {
       res.json(createdMessage)
