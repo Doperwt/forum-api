@@ -1,9 +1,9 @@
 const router = require('express').Router()
 const passport = require('../config/auth')
 const { Message } = require('../models')
+const replaceAuthor = require('../lib/replaceAuthor')
 // const utils = require('../lib/utils')
 // const processMove = require('../lib/processMove')
-const replaceAuthor = require('../lib/replaceAuthor')
 const authenticate = passport.authorize('jwt', { session: false })
 
 module.exports = io => {
@@ -16,7 +16,10 @@ module.exports = io => {
       Message.find({reciever:id})
       .then((recievedMessages) =>{
         let allMessages = [...sentMessages,...recievedMessages]
-        res.json(allMessages)
+        replaceAuthor(allMessages )
+          .then((renamedMessages) => {
+            res.json(renamedMessages)
+          })
       })
     })
     // Throw a 500 error if something goes wrong

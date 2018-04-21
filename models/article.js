@@ -9,7 +9,7 @@ const articleSchema = new Schema({
   category: { type: String, reqiored: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-  messages: [replySchema]
+  replies: [replySchema]
 })
 
 
