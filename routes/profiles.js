@@ -1,8 +1,6 @@
 const router = require('express').Router()
 const passport = require('../config/auth')
 const { Profile,User } = require('../models')
-
-
 const authenticate = passport.authorize('jwt', { session: false })
 
 module.exports = io => {
