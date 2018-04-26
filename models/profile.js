@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose
 
-const profileSchema = new Schema({
+ const profileSchema = new Schema({
   fullName: { type:String, required: true },
   picture: { type:String },
   createdAt: { type: Date, default: Date.now },
@@ -11,3 +11,4 @@ const profileSchema = new Schema({
 })
 
 module.exports = mongoose.model('profiles', profileSchema )
+module.exports.profileSchema = profileSchema

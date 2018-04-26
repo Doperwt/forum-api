@@ -1,8 +1,6 @@
 const router = require('express').Router()
 const passport = require('../config/auth')
 const { Profile,User } = require('../models')
-
-
 const authenticate = passport.authorize('jwt', { session: false })
 
 module.exports = io => {
@@ -30,9 +28,13 @@ module.exports = io => {
       if(!foundProfile){
         Profile.create(newProfile)
         .then((createdProfile) => {
+          let updatedUser = { profile:createdProfile }
+          User.findByIdAndUpdate((id),{ $set:updatedUser },{new:true})
+          .then((updatedUser) => { console.log(updatedUser.profile)})
           res.json(createdProfile)
        })
        .catch((error) => next(error))
+
       } else {
         newProfile.updatedAt = Date.now()
         Profile.findByIdAndUpdate(foundProfile._id,{ $set: newProfile }, { new: true })

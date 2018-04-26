@@ -1,9 +1,9 @@
 const router = require('express').Router()
 const passport = require('../config/auth')
 const { Message } = require('../models')
+const replaceAuthor = require('../lib/replaceAuthor')
 // const utils = require('../lib/utils')
 // const processMove = require('../lib/processMove')
-const replaceAuthor = require('../lib/replaceAuthor')
 const authenticate = passport.authorize('jwt', { session: false })
 
 module.exports = io => {
@@ -16,24 +16,27 @@ module.exports = io => {
       Message.find({reciever:id})
       .then((recievedMessages) =>{
         let allMessages = [...sentMessages,...recievedMessages]
-        res.json(allMessages)
+        replaceAuthor(allMessages )
+          .then((renamedMessages) => {
+            res.json(renamedMessages)
+          })
       })
     })
     // Throw a 500 error if something goes wrong
     .catch((error) => next(error))
   })
 
-  // .get('/messages/:messageId', (req, res, next) => {
-  //   const messageId = req.params.messageId
-  //   Message.findById(id)
-  //   .then((foundMessage) => {
-  //     if (!foundMessage) { return next() }
-  //     res.json(foundMessage)
-  //   })
-  //   .catch((error) => next(error))
-  // })
+  .get('/message/:messageId', (req, res, next) => {
+    const messageId = req.params.messageId
+    Message.findById(messageId)
+    .then((foundMessage) => {
+      if (!foundMessage) { return next() }
+      res.json(foundMessage)
+    })
+    .catch((error) => next(error))
+  })
 
-  .post('/messages/', authenticate, (req, res, next) => {
+  .post('/messages', authenticate, (req, res, next) => {
     const messageId = req.params.id
     const newMessage = {
       author: req.body.author,
@@ -41,6 +44,7 @@ module.exports = io => {
       reciever: req.body.reciever,
       replyTo: req.body.replyTo,
     }
+    console.log(newMessage,'NEW MESSAGE')
     Message.create(newMessage)
     .then((createdMessage) => {
       res.json(createdMessage)

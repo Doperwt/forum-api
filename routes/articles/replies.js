@@ -15,7 +15,6 @@ module.exports = io => {
     .sort({ createdAt: 1 })
     // Send the data in JSON format
     .then((replies) => {
-      console.log(replies)
       if(replies.length!==0){
         replaceAuthor(replies)
           .then((newReplies) => res.json(newReplies))

@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const passport = require('../config/auth')
-const { Article } = require('../models')
+const { Article,Reply } = require('../models')
 // const utils = require('../lib/utils')
 // const processMove = require('../lib/processMove')
 const replaceAuthor = require('../lib/replaceAuthor')
@@ -85,19 +85,36 @@ module.exports = io => {
     })
     .delete('/articles/:id', authenticate, (req, res, next) => {
       const id = req.params.id
-      Article.findByIdAndRemove(id)
-        .then(() => {
-          io.emit('action', {
-            type: 'ARTICLE_REMOVED',
-            payload: id
-          })
-          res.status = 200
-          res.json({
-            message: 'Removed',
-            _id: id
-          })
+      const userId = req.account._id.toString()
+      Article.findById(id)
+        .then((foundArticle) => {
+          if(foundArticle.author===userId){
+            Reply.find({articleId:id})
+              .then((replies) => {
+                replies.map((reply) => {
+                  Reply.findByIdAndRemove(reply._id)
+                  .catch((error) => next(error))
+                  console.log(reply._id,'REPLY REMOVED')
+                })
+              })
+              .then(() => {
+                Article.findByIdAndRemove(id)
+                .then(() => {
+                  io.emit('action', {
+                    type: 'ARTICLE_DELETED',
+                    payload: id
+                  })
+                  res.status = 200
+                  res.json({
+                    message: 'Removed',
+                    _id: id
+                  })
+                })
+                .catch((error) => next(error))
+              })
+            .catch((error) => next(error))
+          }
         })
-        .catch((error) => next(error))
     })
 
   return router

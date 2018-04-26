@@ -9,7 +9,8 @@ const {
   profiles,
   categories,
   replies,
-  messages } = require('./routes')
+  messages,
+  names } = require('./routes')
 const http = require('http')
 const socketAuth = require('./config/socket-auth')
 const socketIO = require('socket.io')
@@ -40,6 +41,7 @@ app
   .use(categories(io))
   .use(replies(io))
   .use(messages(io))
+  .use(names(io))
 
   // catch 404 and forward to error handler
   .use((req, res, next) => {
