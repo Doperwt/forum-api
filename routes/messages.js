@@ -37,17 +37,19 @@ module.exports = io => {
   })
 
   .post('/messages', authenticate, (req, res, next) => {
-    const messageId = req.params.id
-    User.findById(req.body.reciever)
-      .then((reciever) => {
-        if(!!reciever){
+    const { author,content,reciever,replyTo } = req.body
+    if(reciever===author){
+      res.json({ message:`You can't send a message to yourself`})
+    } else {
+      User.findById(reciever)
+      .then((someGuy) => {
+        if(!!someGuy){
           const newMessage = {
-            author: req.body.author,
-            content: req.body.content,
-            reciever: req.body.reciever,
-            replyTo: req.body.replyTo,
+            author: author,
+            content: content,
+            reciever: reciever,
+            replyTo: replyTo,
           }
-          console.log(newMessage,'NEW MESSAGE')
           Message.create(newMessage)
           .then((createdMessage) => {
             res.json(createdMessage)
@@ -60,6 +62,7 @@ module.exports = io => {
         }
       })
       .catch((err) => { console.log(err)})
+    }
   })
 
   .delete('/messages/:messageId', authenticate, (req, res, next) => {
