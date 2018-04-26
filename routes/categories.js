@@ -8,7 +8,7 @@ module.exports = io => {
       Article.find()
         .then((articles) => {
           let allCategories = articles.map(article => article.category)
-          let categories = allCategories.filter((el, i, a) => i === a.indexOf(el))
+          let categories = allCategories.filter((el, i, category) => i === category.indexOf(el))
           res.json(categories)
         })
     })
