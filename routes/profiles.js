@@ -16,8 +16,9 @@ module.exports = io => {
       .catch((error) => res.json(null))
   })
   .get('/profile/:id', authenticate,(req, res, next) => {
+
     const id = req.params.id
-    Profile.findById(id)
+    Profile.findOne({userId:id})
       .then((profile) => {
         res.json(profile)
       })
