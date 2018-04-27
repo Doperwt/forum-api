@@ -94,7 +94,6 @@ module.exports = io => {
                 replies.map((reply) => {
                   Reply.findByIdAndRemove(reply._id)
                   .catch((error) => next(error))
-                  console.log(reply._id,'REPLY REMOVED')
                 })
               })
               .then(() => {

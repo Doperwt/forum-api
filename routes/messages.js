@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const passport = require('../config/auth')
-const { Message } = require('../models')
+const { Message,User } = require('../models')
 const replaceAuthor = require('../lib/replaceAuthor')
 // const utils = require('../lib/utils')
 // const processMove = require('../lib/processMove')
@@ -16,7 +16,7 @@ module.exports = io => {
       Message.find({reciever:id})
       .then((recievedMessages) =>{
         let allMessages = [...sentMessages,...recievedMessages]
-        replaceAuthor(allMessages )
+        replaceAuthor(allMessages)
           .then((renamedMessages) => {
             res.json(renamedMessages)
           })
@@ -37,38 +37,32 @@ module.exports = io => {
   })
 
   .post('/messages', authenticate, (req, res, next) => {
-    const messageId = req.params.id
-    const newMessage = {
-      author: req.body.author,
-      content: req.body.content,
-      reciever: req.body.reciever,
-      replyTo: req.body.replyTo,
-    }
-    console.log(newMessage,'NEW MESSAGE')
-    Message.create(newMessage)
-    .then((createdMessage) => {
-      res.json(createdMessage)
-    })
-    .catch((error) => next(error))
-  })
-
-  .patch('/messages/:messageId', authenticate, (req, res, next) => {
-    const messageId = req.params.messageId
-    const userId = req.account._id.toString()
-    Message.findById(messageId)
-    .then((reply) => {
-      if (!reply) { return next() }
-      const updatedMessage = { content:req.body.content,updatedAt:Date.now()}
-      Message.findByIdAndUpdate(messageId, { $set: updatedMessage }, { new: true })
-      .then((newUpdatedMessage) => {
-        replaceAuthor([newUpdatedMessage])
-          .then((changedMessage) => {
-            res.json(changedMessage)
+    const { author,content,reciever,replyTo } = req.body
+    if(reciever===author){
+      res.json({ message:`You can't send a message to yourself`})
+    } else {
+      User.findById(reciever)
+      .then((someGuy) => {
+        if(!!someGuy){
+          const newMessage = {
+            author: author,
+            content: content,
+            reciever: reciever,
+            replyTo: replyTo,
+          }
+          Message.create(newMessage)
+          .then((createdMessage) => {
+            res.json(createdMessage)
           })
-        })
-      .catch((error) => next(error))
-    })
-    .catch((error) => next(error))
+          .catch((error) => next(error))
+
+        }
+        else {
+          res.json({message:'invalid reciever'})
+        }
+      })
+      .catch((err) => { console.log(err)})
+    }
   })
 
   .delete('/messages/:messageId', authenticate, (req, res, next) => {

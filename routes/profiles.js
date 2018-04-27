@@ -5,9 +5,9 @@ const authenticate = passport.authorize('jwt', { session: false })
 
 module.exports = io => {
   router
-  .get('/profile/:id', authenticate,(req, res, next) => {
-    const id = req.params.id
-    Profile.findOne({userId:id})
+  .get('/profile', authenticate,(req,res,next) => {
+    const UserId = req.account._id
+    Profile.findOne({userId:UserId})
       .then((profile) => {
         if (!profile) { res.json('not found') }
 
@@ -15,13 +15,24 @@ module.exports = io => {
       })
       .catch((error) => res.json(null))
   })
-  .post('/profile/:id',authenticate, (req, res, next) => {
+  .get('/profile/:id', authenticate,(req, res, next) => {
+
     const id = req.params.id
+    Profile.findOne({userId:id})
+      .then((profile) => {
+        res.json(profile)
+      })
+      .catch((err) => {
+        res.json(err)
+      })
+  })
+  .post('/profile',authenticate, (req, res, next) => {
+    const UserId = req.account._id
     const newProfile = {
       fullName: req.body.fullName,
       bio: req.body.bio,
       picture: req.body.picture,
-      userId: id
+      userId: UserId
     }
     Profile.findOne({userId:id})
     .then((foundProfile) => {
