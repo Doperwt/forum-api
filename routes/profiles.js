@@ -34,7 +34,7 @@ module.exports = io => {
       picture: req.body.picture,
       userId: UserId
     }
-    Profile.findOne({userId:id})
+    Profile.findOne({userId:UserId})
     .then((foundProfile) => {
       if(!foundProfile){
         Profile.create(newProfile)
