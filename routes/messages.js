@@ -31,7 +31,10 @@ module.exports = io => {
     Message.findById(messageId)
     .then((foundMessage) => {
       if (!foundMessage) { return next() }
-      res.json(foundMessage)
+      replaceAuthor([foundMessage])
+        .then((renamedMessage) => {
+          res.json(renamedMessage[0])
+        })
     })
     .catch((error) => next(error))
   })
