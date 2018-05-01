@@ -8,6 +8,7 @@ const authenticate = passport.authorize('jwt', { session: false })
 
 module.exports = io => {
   router
+
   .get('/messages/:userId', (req, res, next) => {
     const id = req.params.userId
     console.log(id,'MESSAGE BODY')
@@ -31,7 +32,13 @@ module.exports = io => {
     Message.findById(messageId)
     .then((foundMessage) => {
       if (!foundMessage) { return next() }
-      res.json(foundMessage)
+      replaceAuthor([foundMessage])
+        .then((renamedMessage) => {
+          const messageUpdate = {read:true}
+          Message.findByIdAndUpdate((messageId),{ $set:messageUpdate },{new:true})
+            .then(() => { res.json(renamedMessage[0]) })
+
+        })
     })
     .catch((error) => next(error))
   })
@@ -52,7 +59,10 @@ module.exports = io => {
           }
           Message.create(newMessage)
           .then((createdMessage) => {
-            res.json(createdMessage)
+            replaceAuthor([createdMessage])
+              .then((renamedMessage) => {
+                res.json(renamedMessage[0])
+              })
           })
           .catch((error) => next(error))
 
@@ -65,8 +75,9 @@ module.exports = io => {
     }
   })
 
-  .delete('/messages/:messageId', authenticate, (req, res, next) => {
+  .delete('/message/:messageId', authenticate, (req, res, next) => {
     const messageId = req.params.messageId
+
     Message.findByIdAndRemove(messageId)
     .then(() => {
       res.status = 200

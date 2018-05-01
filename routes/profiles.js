@@ -1,18 +1,26 @@
 const router = require('express').Router()
 const passport = require('../config/auth')
-const { Profile,User } = require('../models')
+const { Profile,User,Message } = require('../models')
 const authenticate = passport.authorize('jwt', { session: false })
 
 module.exports = io => {
   router
   .get('/profile', authenticate,(req,res,next) => {
-    const UserId = req.account._id
-    Profile.findOne({userId:UserId})
+    const userId = req.account._id
+    Profile.findOne({userId:userId})
       .then((profile) => {
         if (!profile) { res.json('not found') }
+        else {
+          Message.find({reciever:userId})
+            .then((foundMessages) => {
 
-        res.json(profile)
-      })
+              const unreadMessageCount = foundMessages.filter(message => message.read === false ).length
+              let updatedProfile = {...profile._doc, count:unreadMessageCount}
+              console.log(updatedProfile,'COUNT')
+              res.json(updatedProfile)
+            })
+        }
+        })
       .catch((error) => res.json(null))
   })
   .get('/profile/:id', authenticate,(req, res, next) => {
@@ -34,7 +42,7 @@ module.exports = io => {
       picture: req.body.picture,
       userId: UserId
     }
-    Profile.findOne({userId:id})
+    Profile.findOne({userId:UserId})
     .then((foundProfile) => {
       if(!foundProfile){
         Profile.create(newProfile)
