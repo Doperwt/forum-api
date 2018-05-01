@@ -8,7 +8,7 @@ const messageSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   replyTo: { type: String },
-  read: { type: Boolean }
+  read: { type: Boolean, default: false }
 })
 
 module.exports = mongoose.model('messages', messageSchema )
