@@ -16,7 +16,6 @@ module.exports = io => {
 
               const unreadMessageCount = foundMessages.filter(message => message.read === false ).length
               let updatedProfile = {...profile._doc, count:unreadMessageCount}
-              console.log(updatedProfile,'COUNT')
               res.json(updatedProfile)
             })
         }
@@ -48,7 +47,7 @@ module.exports = io => {
         Profile.create(newProfile)
         .then((createdProfile) => {
           let updatedUser = { profile:createdProfile }
-          User.findByIdAndUpdate((id),{ $set:updatedUser },{new:true})
+          User.findByIdAndUpdate((UserId),{ $set:updatedUser },{new:true})
           .then((updatedUser) => { console.log(updatedUser.profile)})
           res.json(createdProfile)
        })

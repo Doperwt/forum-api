@@ -27,16 +27,19 @@ module.exports = io => {
     .catch((error) => next(error))
   })
 
-  .get('/message/:messageId', (req, res, next) => {
+  .get('/message/:messageId',authenticate, (req, res, next) => {
     const messageId = req.params.messageId
+    const userId = req.account._id
     Message.findById(messageId)
     .then((foundMessage) => {
       if (!foundMessage) { return next() }
       replaceAuthor([foundMessage])
         .then((renamedMessage) => {
-          const messageUpdate = {read:true}
-          Message.findByIdAndUpdate((messageId),{ $set:messageUpdate },{new:true})
-            .then(() => { res.json(renamedMessage[0]) })
+          if(foundMessage.reciever==userId){
+          Message.findByIdAndUpdate((messageId),{ $set:{read:true} },{new:true})
+            .then(() => { res.json(renamedMessage[0])  })
+          }
+          else { res.json(renamedMessage[0]) }
 
         })
     })
