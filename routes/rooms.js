@@ -1,15 +1,15 @@
 const router = require('express').Router()
 const { Room,User } = require('../models')
+const passport = require('../config/auth')
+
+const authenticate = passport.authorize('jwt', { session: false })
 
 module.exports = io => {
   router
   .get('/rooms',(req, res, next) => {
     Room.find()
       .then((rooms) => {
-        const roomNames = rooms.map((room) => {
-          return room.name
-        })
-        res.json(roomNames)
+        res.json(rooms)
       })
       .catch((error) => res.json(error))
   })
@@ -24,22 +24,25 @@ module.exports = io => {
   .post('/room', authenticate , (req,res,next) => {
     const ownerId = req.account._id
     const { name,game } = req.body
+    console.log(name,game,'RECIEVED ROOM')
     let newRoom = {
-      owner:ownerId,
+      ownerId:ownerId,
       name: name,
       participants: [ownerId],
-      game:game
+      game:game,
+      messages: []
     }
-    Room.create(newRoom)
+    Room.create(newRoom )
       .then((createdRoom) => {
         res.json(createdRoom)
       })
       .catch((err) => { res.json(err) })
   })
-  .patch('/room/:roomId',authenticate,(req,res,next) => {
+  .patch('/room/',authenticate,(req,res,next) => {
     const userId = req.account._id
     const patchedRoom = req.body
-    Room.findByIdAndUpdate((updatedRoom._id),{ $set:patchedRoom },{new:true})
+    console.log(req.body,'INCOMING PATCH')
+    Room.findByIdAndUpdate((patchedRoom._id),{ $set:patchedRoom },{new:true})
       .then((updatedRoom) => {
         res.json(updatedRoom)
       })
