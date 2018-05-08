@@ -29,7 +29,8 @@ module.exports = io => {
       ownerId:ownerId,
       name: name,
       participants: [ownerId],
-      game:game
+      game:game,
+      messages: []
     }
     Room.create(newRoom )
       .then((createdRoom) => {
@@ -37,10 +38,11 @@ module.exports = io => {
       })
       .catch((err) => { res.json(err) })
   })
-  .patch('/room/:roomId',authenticate,(req,res,next) => {
+  .patch('/room/',authenticate,(req,res,next) => {
     const userId = req.account._id
     const patchedRoom = req.body
-    Room.findByIdAndUpdate((updatedRoom._id),{ $set:patchedRoom },{new:true})
+    console.log(req.body,'INCOMING PATCH')
+    Room.findByIdAndUpdate((patchedRoom._id),{ $set:patchedRoom },{new:true})
       .then((updatedRoom) => {
         res.json(updatedRoom)
       })
