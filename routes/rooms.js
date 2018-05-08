@@ -1,15 +1,15 @@
 const router = require('express').Router()
 const { Room,User } = require('../models')
+const passport = require('../config/auth')
+
+const authenticate = passport.authorize('jwt', { session: false })
 
 module.exports = io => {
   router
   .get('/rooms',(req, res, next) => {
     Room.find()
       .then((rooms) => {
-        const roomNames = rooms.map((room) => {
-          return room.name
-        })
-        res.json(roomNames)
+        res.json(rooms)
       })
       .catch((error) => res.json(error))
   })
@@ -24,13 +24,14 @@ module.exports = io => {
   .post('/room', authenticate , (req,res,next) => {
     const ownerId = req.account._id
     const { name,game } = req.body
+    console.log(name,game,'RECIEVED ROOM')
     let newRoom = {
-      owner:ownerId,
+      ownerId:ownerId,
       name: name,
       participants: [ownerId],
       game:game
     }
-    Room.create(newRoom)
+    Room.create(newRoom )
       .then((createdRoom) => {
         res.json(createdRoom)
       })

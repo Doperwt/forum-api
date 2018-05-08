@@ -10,7 +10,8 @@ const {
   categories,
   replies,
   messages,
-  names } = require('./routes')
+  names,
+  rooms } = require('./routes')
 const http = require('http')
 const socketAuth = require('./config/socket-auth')
 const socketIO = require('socket.io')
@@ -42,7 +43,7 @@ app
   .use(replies(io))
   .use(messages(io))
   .use(names(io))
-
+  .use(rooms(io))
   // catch 404 and forward to error handler
   .use((req, res, next) => {
     const err = new Error('Not Found')

@@ -6,6 +6,7 @@ const categories = require('./categories')
 const replies = require('./articles/replies')
 const messages = require('./messages')
 const names = require('./names')
+const rooms = require('./rooms')
 module.exports = {
   articles,
   users,
@@ -14,5 +15,6 @@ module.exports = {
   categories,
   replies,
   messages,
-  names
+  names,
+  rooms
 }
