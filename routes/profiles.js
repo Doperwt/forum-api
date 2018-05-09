@@ -23,7 +23,6 @@ module.exports = io => {
       .catch((error) => res.json(null))
   })
   .get('/profile/:id', authenticate,(req, res, next) => {
-
     const id = req.params.id
     Profile.findOne({userId:id})
       .then((profile) => {
@@ -52,7 +51,6 @@ module.exports = io => {
           res.json(createdProfile)
        })
        .catch((error) => next(error))
-
       } else {
         newProfile.updatedAt = Date.now()
         Profile.findByIdAndUpdate(foundProfile._id,{ $set: newProfile }, { new: true })
