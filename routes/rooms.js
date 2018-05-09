@@ -45,6 +45,7 @@ module.exports = io => {
     Room.findByIdAndUpdate((patchedRoom._id),{ $set:patchedRoom },{new:true})
       .then((updatedRoom) => {
         res.json(updatedRoom)
+        io.emit('action',{type:'UPDATED_ROOM',payload:updatedRoom})
       })
       .catch((err) => { res.json(err)})
   })
