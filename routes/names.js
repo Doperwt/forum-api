@@ -6,13 +6,10 @@ module.exports = io => {
   .get('/names/:partial',(req, res, next) => {
     const partialName = req.params.partial
 
-    console.log(partialName,"recieved NAMES route")
     Profile.find({fullName:{$regex:partialName}})
       .then((profiles) => {
         User.find({email:{$regex:partialName}})
           .then((users) => {
-            // if (!profile) { res.json('not found') }
-            // console.log(users,profiles,'found users and profiles')
             let resultUsers= users.map((user) =>{
               return { name: user.email.split('@')[0],_id:user._id}
             })
@@ -29,7 +26,6 @@ module.exports = io => {
   })
   .get('/name/:partial',(req,res,nexxt) => {
     const partialName = req.params.partial
-    console.log(partialName,'recieved NAME route')
   })
   return router
 }

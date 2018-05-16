@@ -24,7 +24,6 @@ module.exports = io => {
   .post('/room', authenticate , (req,res,next) => {
     const ownerId = req.account._id
     const { name,game } = req.body
-    console.log(name,game,'RECIEVED ROOM')
     let newRoom = {
       ownerId:ownerId,
       name: name,
@@ -41,7 +40,6 @@ module.exports = io => {
   .patch('/room/',authenticate,(req,res,next) => {
     const userId = req.account._id
     const patchedRoom = req.body
-    console.log(req.body,'INCOMING PATCH')
     Room.findByIdAndUpdate((patchedRoom._id),{ $set:patchedRoom },{new:true})
       .then((updatedRoom) => {
         res.json(updatedRoom)
