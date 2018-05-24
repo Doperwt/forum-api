@@ -11,7 +11,6 @@ module.exports = io => {
 
   .get('/messages/:userId', (req, res, next) => {
     const id = req.params.userId
-    console.log(id,'MESSAGE BODY')
     Message.find({author:id})
     .then((sentMessages) => {
       Message.find({reciever:id})

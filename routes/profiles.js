@@ -47,8 +47,8 @@ module.exports = io => {
         .then((createdProfile) => {
           let updatedUser = { profile:createdProfile }
           User.findByIdAndUpdate((UserId),{ $set:updatedUser },{new:true})
-          .then((updatedUser) => { console.log(updatedUser.profile)})
-          res.json(createdProfile)
+          .then((updatedUser) => {res.json(createdProfile)})
+          .catch((err) => {res.json(err)})
        })
        .catch((error) => next(error))
       } else {

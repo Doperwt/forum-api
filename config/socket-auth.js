@@ -6,8 +6,6 @@ const { User } = require('../models')
 const middleware = jwtAuth.authenticate({
   secret: jwtOptions.secretOrKey,    // required, used to verify the token's signature
 }, (jwtPayload, done) => {
-  // console.log('payload received', jwtPayload)
-
   User.findById(jwtPayload.id)
     .then((user) => {
       if (user) {
