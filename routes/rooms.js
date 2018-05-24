@@ -38,12 +38,28 @@ module.exports = io => {
       .catch((err) => { res.json(err) })
   })
   .patch('/room/',authenticate,(req,res,next) => {
-    const userId = req.account._id
     const patchedRoom = req.body
     Room.findByIdAndUpdate((patchedRoom._id),{ $set:patchedRoom },{new:true})
       .then((updatedRoom) => {
-        res.json(updatedRoom)
         io.emit('action',{type:'UPDATED_ROOM',payload:updatedRoom})
+        res.json(updatedRoom)
+      })
+      .catch((err) => { res.json(err)})
+  })
+  .patch('/room/:roomId/line',authenticate,(req,res,next) => {
+    const roomId = req.params.roomId
+    const line = req.body
+    Room.findById(roomId)
+      .then((foundRoom) => {
+        let patchedRoom = foundRoom.toObject()
+        let messages = patchedRoom.messages
+        patchedRoom.messages = [ ...messages,line ]
+        Room.findByIdAndUpdate((patchedRoom._id),{ $set:patchedRoom },{new:true})
+        .then((updatedRoom) => {
+          io.emit(updatedRoom._id.toString(),{type:'UPDATED_ROOM',payload:updatedRoom})
+          res.json(updatedRoom)
+        })
+
       })
       .catch((err) => { res.json(err)})
   })
